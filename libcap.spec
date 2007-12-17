@@ -19,7 +19,6 @@ Patch7:		libcap-1.10-alt-warnings.patch
 Patch8:		libcap-1.10-rh-alt-makenames.patch
 Patch9:		libcap-1.10-alt-userland.patch
 Patch10:	libcap-1.10-alt-cap_file.patch
-BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
