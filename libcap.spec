@@ -5,7 +5,7 @@
 Summary: 	Library for getting and setting POSIX.1e capabilities
 Name: 		libcap
 Version: 	1.10
-Release: 	%mkrel 8
+Release: 	%mkrel 9
 Group: 		System/Kernel and hardware
 License: 	BSD/GPL
 URL: 		ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4
@@ -48,9 +48,10 @@ draft 15 capabilities.
 %package -n	%{develname}
 Summary:	Development files for %{name}
 Group:		Development/Kernel
-Requires:	%{libname} = %{version}
+Requires:	%{libname} = %{version}-%{release}
 Provides:	%{name}-devel = %{version}-%{release}
-Obsoletes:	%{mklibname cap 1 -d}
+Provides:       cap-devel = %{version}-%{release}
+Obsoletes:	%{mklibname cap 1 -d} < %{version}-%{release}
 
 %description -n	%{develname}
 Development files (Headers, libraries for static linking, etc) for %{name}.
