@@ -5,7 +5,7 @@
 Summary: 	Library for getting and setting POSIX.1e capabilities
 Name: 		libcap
 Version: 	1.10
-Release: 	%mkrel 9
+Release: 	%mkrel 10
 Group: 		System/Kernel and hardware
 License: 	BSD/GPL
 URL: 		ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4
