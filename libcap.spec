@@ -4,14 +4,14 @@
 
 Summary: 	Library for getting and setting POSIX.1e capabilities
 Name: 		libcap
-Version: 	2.10
+Version: 	2.16
 Release: 	%mkrel 1
 Group: 		System/Kernel and hardware
 License: 	BSD/GPL
 URL: 		http://www.kernel.org/pub/linux/libs/security/linux-privs/
 Source0:	http://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz
 Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
-Patch0:		libcap-non_static_tools_fix.diff
+Patch0:		libcap-2.16-linkage_fix.diff
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
 BuildConflicts:	cap-devel
@@ -72,10 +72,16 @@ Linux kernel capabilities.
 
 install -m644 %{SOURCE1} .
 
-perl -pi -e "s#^COPTFLAGS=.*#COPTFLAG=$RPM_OPT_FLAGS#g" Make.Rules
 perl -pi -e 's,^man_prefix=.*,man_prefix=\$\(prefix)/share,g' Make.Rules
 
 %build
+%serverbuild
+
+# voodoo magic
+LDFLAGS=`rpm --eval %%configure|grep LDFLAGS|cut -d\" -f2`
+perl -pi -e "s|^CFLAGS\ :=.*|CFLAGS\ :=$CFLAGS|g" Make.Rules
+perl -pi -e "s|^LDFLAGS\ :=.*|LDFLAGS\ :=$LDFLAGS|g" Make.Rules
+
 %make prefix=%{_prefix}
 
 %install
@@ -126,4 +132,5 @@ rm -rf %{buildroot}
 %doc capfaq-0.2.txt
 %{_includedir}/*
 /%{_lib}/*.so
+/%{_lib}/*.a
 %{_mandir}/man3/*
