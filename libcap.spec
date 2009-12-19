@@ -4,16 +4,14 @@
 
 Summary: 	Library for getting and setting POSIX.1e capabilities
 Name: 		libcap
-Version: 	2.16
-Release: 	%mkrel 2
+Version: 	2.17
+Release: 	%mkrel 1
 Group: 		System/Kernel and hardware
 License: 	BSD/GPL
 URL: 		http://www.kernel.org/pub/linux/libs/security/linux-privs/
 Source0:	http://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz
 Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 Patch0:		libcap-2.16-linkage_fix.diff
-Patch1:		libcap-2.16-remove-kernel-headers-workaround.patch
-Patch2:		libcap-2.16-buildfix.patch
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
 BuildConflicts:	cap-devel
@@ -71,8 +69,6 @@ Linux kernel capabilities.
 
 %setup -q
 %patch0 -p0
-%patch1 -p1
-%patch2 -p1
 
 install -m644 %{SOURCE1} .
 
@@ -126,7 +122,7 @@ rm -rf %{buildroot}
 %doc pam_cap/License
 %attr(0640,root,root) %config(noreplace) %{_sysconfdir}/security/capability.conf
 /%{_lib}/security/pam_cap.so
-         
+
 %files -n %{libname}
 %defattr(-,root,root)
 /%{_lib}/lib*.so.%{major}*
