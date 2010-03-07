@@ -4,17 +4,16 @@
 
 Summary: 	Library for getting and setting POSIX.1e capabilities
 Name: 		libcap
-Version: 	2.17
+Version: 	2.19
 Release: 	%mkrel 1
 Group: 		System/Kernel and hardware
-License: 	BSD/GPL
+License: 	BSD/GPLv2
 URL: 		http://www.kernel.org/pub/linux/libs/security/linux-privs/
 Source0:	http://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz
 Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 Patch0:		libcap-2.16-linkage_fix.diff
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
-BuildConflicts:	cap-devel
 BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
@@ -134,3 +133,5 @@ rm -rf %{buildroot}
 /%{_lib}/*.so
 /%{_lib}/*.a
 %{_mandir}/man3/*
+%{_mandir}/man1/capsh.1.lzma
+
