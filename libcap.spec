@@ -133,5 +133,5 @@ rm -rf %{buildroot}
 /%{_lib}/*.so
 /%{_lib}/*.a
 %{_mandir}/man3/*
-%{_mandir}/man1/capsh.1.lzma
+%{_mandir}/man1/capsh.1.*
 
