@@ -4,17 +4,17 @@
 
 Summary: 	Library for getting and setting POSIX.1e capabilities
 Name: 		libcap
-Version: 	2.19
-Release: 	%mkrel 7
+Version: 	2.22
+Release: 	1
 Group: 		System/Kernel and hardware
 License: 	BSD/GPLv2
 URL: 		http://www.kernel.org/pub/linux/libs/security/linux-privs/
-Source0:	http://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz
-Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
+Source0:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz
+Source1:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz.asc
+Source2:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 Patch0:		libcap-2.16-linkage_fix.diff
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
-BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
@@ -50,7 +50,7 @@ draft 15 capabilities.
 %package -n	%{develname}
 Summary:	Development files for %{name}
 Group:		Development/Kernel
-Requires:	%{libname} = %{version}-%{release}
+Requires:	%{libname} >= %{version}-%{release}
 Provides:	%{name}-devel = %{version}-%{release}
 Provides:       cap-devel = %{version}-%{release}
 Conflicts:	%{mklibname cap 1 -d}
@@ -69,17 +69,15 @@ Linux kernel capabilities.
 %setup -q
 %patch0 -p0
 
-install -m644 %{SOURCE1} .
+install -m644 %{SOURCE2} .
 
 perl -pi -e 's,^man_prefix=.*,man_prefix=\$\(prefix)/share,g' Make.Rules
 
 %build
 %serverbuild
 
-# voodoo magic
-LDFLAGS=`rpm --eval %%configure|grep LDFLAGS|cut -d\" -f2`
-perl -pi -e "s|^CFLAGS\ :=.*|CFLAGS\ :=$CFLAGS|g" Make.Rules
-perl -pi -e "s|^LDFLAGS\ :=.*|LDFLAGS\ :=$LDFLAGS|g" Make.Rules
+perl -pi -e "s|^CFLAGS\ :=.*|CFLAGS\ :=$CFLAGS -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64|g" Make.Rules
+perl -pi -e "s|^LDFLAGS\ :=.*|LDFLAGS\ :=%{ldflags}|g" Make.Rules
 
 %make prefix=%{_prefix}
 
@@ -88,26 +86,17 @@ rm -rf %{buildroot}
 
 install -d %{buildroot}%{_sysconfdir}/security
 
-make install prefix=%{_prefix} LIBDIR=%{buildroot}/%{_lib} FAKEROOT=%{buildroot}
+make install prefix=%{_prefix} LIBDIR=%{buildroot}/%{_lib} FAKEROOT=%{buildroot} RAISE_SETFCAP=no
 
 # conflics with man-pages
 rm -f %{buildroot}%{_mandir}/man2/*
 
 install -m0640 pam_cap/capability.conf %{buildroot}%{_sysconfdir}/security/
 
-%if %mdkversion < 200900
-%post -n %{libname} -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n %{libname} -p /sbin/ldconfig
-%endif
-
-%clean
-rm -rf %{buildroot}
+# cleanup
+rm -f %{buildroot}/%{_lib}/*.a
 
 %files utils
-%defattr(-,root,root)
 %doc CHANGELOG License README contrib
 %{_sbindir}/capsh
 %{_sbindir}/getcap
@@ -117,21 +106,16 @@ rm -rf %{buildroot}
 %{_mandir}/man8/setcap.8*
 
 %files -n pam_cap
-%defattr(-,root,root)
 %doc pam_cap/License
 %attr(0640,root,root) %config(noreplace) %{_sysconfdir}/security/capability.conf
 /%{_lib}/security/pam_cap.so
 
 %files -n %{libname}
-%defattr(-,root,root)
 /%{_lib}/lib*.so.%{major}*
 
 %files -n %{develname}
-%defattr(-,root,root)
 %doc capfaq-0.2.txt
 %{_includedir}/*
 /%{_lib}/*.so
-/%{_lib}/*.a
 %{_mandir}/man3/*
 %{_mandir}/man1/capsh.1.*
-
