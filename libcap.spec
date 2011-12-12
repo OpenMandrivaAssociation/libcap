@@ -74,9 +74,7 @@ install -m644 %{SOURCE2} .
 perl -pi -e 's,^man_prefix=.*,man_prefix=\$\(prefix)/share,g' Make.Rules
 
 %build
-%serverbuild
-
-perl -pi -e "s|^CFLAGS\ :=.*|CFLAGS\ :=$CFLAGS -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64|g" Make.Rules
+perl -pi -e "s|^CFLAGS\ :=.*|CFLAGS\ :=%{optflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64|g" Make.Rules
 perl -pi -e "s|^LDFLAGS\ :=.*|LDFLAGS\ :=%{ldflags}|g" Make.Rules
 
 %make prefix=%{_prefix}
