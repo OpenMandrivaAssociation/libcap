@@ -2,10 +2,12 @@
 %define libname %mklibname cap %{major}
 %define develname %mklibname cap -d
 
+%bcond_without	uclibc
+
 Summary: 	Library for getting and setting POSIX.1e capabilities
 Name: 		libcap
 Version: 	2.22
-Release: 	2
+Release: 	3
 Group: 		System/Kernel and hardware
 License: 	BSD/GPLv2
 URL: 		http://www.kernel.org/pub/linux/libs/security/linux-privs/
@@ -15,6 +17,9 @@ Source2:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/cap
 Patch0:		libcap-2.16-linkage_fix.diff
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
+%if %{with uclibc}
+BuildRequires:	uClibc-devel >= 0.9.33.2-9
+%endif
 
 %description
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
@@ -44,6 +49,15 @@ Group:		System/Kernel and hardware
 Provides:	%{name} = %{version}-%{release}
 
 %description -n	%{libname}
+%{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
+draft 15 capabilities.
+
+%package -n	uclibc-%{libname}
+Summary:	Library for getting and setting POSIX.1e capabilities (uClibc linked)
+Group:		System/Kernel and hardware
+Provides:	%{name} = %{version}-%{release}
+
+%description -n	uclibc-%{libname}
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
@@ -77,7 +91,15 @@ perl -pi -e 's,^man_prefix=.*,man_prefix=\$\(prefix)/share,g' Make.Rules
 perl -pi -e "s|^CFLAGS\ :=.*|CFLAGS\ :=%{optflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64|g" Make.Rules
 perl -pi -e "s|^LDFLAGS\ :=.*|LDFLAGS\ :=%{ldflags}|g" Make.Rules
 
-%make prefix=%{_prefix}
+%if %{with uclibc}
+mkdir -p uclibc
+# we build without libattr support for now..
+%make -C libcap prefix=%{_prefix} CC=%{uclibc_cc} CFLAGS="%{uclibc_cflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" LDCONFIG="%{ldconfig}" LIBATTR=no
+mv libcap/libcap*.so* uclibc
+make clean
+%endif
+
+%make prefix=%{_prefix} CFLAGS="%{uclibc_cflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" LDCONFIG="%{ldconfig}"
 
 %install
 rm -rf %{buildroot}
@@ -85,6 +107,12 @@ rm -rf %{buildroot}
 install -d %{buildroot}%{_sysconfdir}/security
 
 make install prefix=%{_prefix} LIBDIR=%{buildroot}/%{_lib} FAKEROOT=%{buildroot} RAISE_SETFCAP=no
+
+%if %{with uclibc}
+install -d %{buildroot}%{uclibc_root}{/%{_lib},%{_libdir}}
+cp -a uclibc/libcap.so.%{major}* %{buildroot}%{uclibc_root}/%{_lib}
+ln -srf %{buildroot}%{uclibc_root}/%{_lib}/libcap.so.%{major} %{buildroot}%{uclibc_root}%{_libdir}/libcap.so
+%endif
 
 # conflics with man-pages
 rm -f %{buildroot}%{_mandir}/man2/*
@@ -111,9 +139,15 @@ rm -f %{buildroot}/%{_lib}/*.a
 %files -n %{libname}
 /%{_lib}/lib*.so.%{major}*
 
+%files -n uclibc-%{libname}
+%{uclibc_root}/%{_lib}/lib*.so.%{major}*
+
 %files -n %{develname}
 %doc capfaq-0.2.txt
 %{_includedir}/*
 /%{_lib}/*.so
+%if %{with uclibc}
+%{uclibc_root}%{_libdir}/*.so
+%endif
 %{_mandir}/man3/*
 %{_mandir}/man1/capsh.1.*
