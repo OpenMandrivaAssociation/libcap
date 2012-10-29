@@ -107,11 +107,14 @@ make clean
 install -d %{buildroot}%{_sysconfdir}/security
 
 make install prefix=%{_prefix} LIBDIR=%{buildroot}/%{_lib} FAKEROOT=%{buildroot} RAISE_SETFCAP=no
+rm -f %{buildroot}/%{_lib}/libcap.so
+install -d %{buildroot}%{_libdir}
+ln -srf %{buildroot}/%{_lib}/libcap.so.%{major}.*.* %{buildroot}%{_libdir}/libcap.so
 
 %if %{with uclibc}
 install -d %{buildroot}%{uclibc_root}{/%{_lib},%{_libdir}}
 cp -a uclibc/libcap.so.%{major}* %{buildroot}%{uclibc_root}/%{_lib}
-ln -srf %{buildroot}%{uclibc_root}/%{_lib}/libcap.so.%{major} %{buildroot}%{uclibc_root}%{_libdir}/libcap.so
+ln -srf %{buildroot}%{uclibc_root}/%{_lib}/libcap.so.%{major}.*.* %{buildroot}%{uclibc_root}%{_libdir}/libcap.so
 %endif
 
 # conflics with man-pages
@@ -145,7 +148,7 @@ rm -f %{buildroot}/%{_lib}/*.a
 %files -n %{devname}
 %doc capfaq-0.2.txt
 %{_includedir}/*
-/%{_lib}/libcap.so
+%{_libdir}/libcap.so
 %if %{with uclibc}
 %{uclibc_root}%{_libdir}/libcap.so
 %endif
