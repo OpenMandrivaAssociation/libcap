@@ -1,6 +1,6 @@
-%define major 2
-%define libname %mklibname cap %{major}
-%define develname %mklibname cap -d
+%define	major	2
+%define	libname	%mklibname cap %{major}
+%define	devname	%mklibname cap -d
 
 %bcond_without	uclibc
 
@@ -61,7 +61,7 @@ Provides:	%{name} = %{version}-%{release}
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
-%package -n	%{develname}
+%package -n	%{devname}
 Summary:	Development files for %{name}
 Group:		Development/Kernel
 Requires:	%{libname} >= %{version}-%{release}
@@ -72,7 +72,7 @@ Provides:	%{name}-devel = %{version}-%{release}
 Provides:       cap-devel = %{version}-%{release}
 Conflicts:	%{mklibname cap 1 -d}
 
-%description -n	%{develname}
+%description -n	%{devname}
 Development files (Headers, libraries for static linking, etc) for %{name}.
 
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
@@ -104,8 +104,6 @@ make clean
 %make prefix=%{_prefix} CFLAGS="%{uclibc_cflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" LDCONFIG="%{ldconfig}"
 
 %install
-rm -rf %{buildroot}
-
 install -d %{buildroot}%{_sysconfdir}/security
 
 make install prefix=%{_prefix} LIBDIR=%{buildroot}/%{_lib} FAKEROOT=%{buildroot} RAISE_SETFCAP=no
@@ -139,17 +137,17 @@ rm -f %{buildroot}/%{_lib}/*.a
 /%{_lib}/security/pam_cap.so
 
 %files -n %{libname}
-/%{_lib}/lib*.so.%{major}*
+/%{_lib}/libcap.so.%{major}*
 
 %files -n uclibc-%{libname}
-%{uclibc_root}/%{_lib}/lib*.so.%{major}*
+%{uclibc_root}/%{_lib}/libcap.so.%{major}*
 
-%files -n %{develname}
+%files -n %{devname}
 %doc capfaq-0.2.txt
 %{_includedir}/*
-/%{_lib}/*.so
+/%{_lib}/libcap.so
 %if %{with uclibc}
-%{uclibc_root}%{_libdir}/*.so
+%{uclibc_root}%{_libdir}/libcap.so
 %endif
-%{_mandir}/man3/*
+%{_mandir}/man3/*.3*
 %{_mandir}/man1/capsh.1.*
