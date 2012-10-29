@@ -109,12 +109,13 @@ install -d %{buildroot}%{_sysconfdir}/security
 make install prefix=%{_prefix} LIBDIR=%{buildroot}/%{_lib} FAKEROOT=%{buildroot} RAISE_SETFCAP=no
 rm -f %{buildroot}/%{_lib}/libcap.so
 install -d %{buildroot}%{_libdir}
-ln -srf %{buildroot}/%{_lib}/libcap.so.%{major}.*.* %{buildroot}%{_libdir}/libcap.so
+ln -srf %{buildroot}/%{_lib}/libcap.so.%{major}.* %{buildroot}%{_libdir}/libcap.so
+chmod 755 %{buildroot}/%{_lib}/libcap.so.%{major}.*
 
 %if %{with uclibc}
 install -d %{buildroot}%{uclibc_root}{/%{_lib},%{_libdir}}
 cp -a uclibc/libcap.so.%{major}* %{buildroot}%{uclibc_root}/%{_lib}
-ln -srf %{buildroot}%{uclibc_root}/%{_lib}/libcap.so.%{major}.*.* %{buildroot}%{uclibc_root}%{_libdir}/libcap.so
+ln -srf %{buildroot}%{uclibc_root}/%{_lib}/libcap.so.%{major}.* %{buildroot}%{uclibc_root}%{_libdir}/libcap.so
 %endif
 
 # conflics with man-pages
