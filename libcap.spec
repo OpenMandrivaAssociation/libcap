@@ -7,7 +7,7 @@
 Summary: 	Library for getting and setting POSIX.1e capabilities
 Name: 		libcap
 Version: 	2.22
-Release: 	3
+Release: 	4
 Group: 		System/Kernel and hardware
 License: 	BSD/GPLv2
 URL: 		http://www.kernel.org/pub/linux/libs/security/linux-privs/
@@ -18,7 +18,7 @@ Patch0:		libcap-2.16-linkage_fix.diff
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
 %if %{with uclibc}
-BuildRequires:	uClibc-devel >= 0.9.33.2-9
+BuildRequires:	uClibc-devel >= 0.9.33.2-15
 %endif
 
 %description
@@ -65,6 +65,9 @@ draft 15 capabilities.
 Summary:	Development files for %{name}
 Group:		Development/Kernel
 Requires:	%{libname} >= %{version}-%{release}
+%if %{with uclibc}
+Requires:	uclibc-%{libname} >= %{version}-%{release}
+%endif
 Provides:	%{name}-devel = %{version}-%{release}
 Provides:       cap-devel = %{version}-%{release}
 Conflicts:	%{mklibname cap 1 -d}
@@ -79,7 +82,6 @@ Install %{name}-devel if you want to develop or compile applications supporting
 Linux kernel capabilities.
 
 %prep
-
 %setup -q
 %patch0 -p0
 
