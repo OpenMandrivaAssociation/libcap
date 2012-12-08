@@ -1,4 +1,2 @@
 sources:
-  "capfaq-0.2.txt:"	118446adb86381aa98e15e680e5c5a9f257d3fd0
-  "libcap-2.22.tar.gz:"	7753165ca685a0c78735fa0db25b815d9576b1fe
-  "libcap-2.22.tar.gz.asc:"	2d932933c9127050c5ee718bd3b9541f05a7fa53
+  "libcap-2.22.tar.gz": 7753165ca685a0c78735fa0db25b815d9576b1fe
