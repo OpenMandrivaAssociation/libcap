@@ -7,7 +7,7 @@
 Summary: 	Library for getting and setting POSIX.1e capabilities
 Name: 		libcap
 Version: 	2.22
-Release: 	4
+Release: 	5
 Group: 		System/Kernel and hardware
 License: 	BSD/GPLv2
 URL: 		http://www.kernel.org/pub/linux/libs/security/linux-privs/
@@ -157,6 +157,9 @@ rm -f %{buildroot}/%{_lib}/*.a
 %{_mandir}/man1/capsh.1.*
 
 %changelog
+* Wed Dec 12 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 2.22-5
+- rebuild on ABF
+
 * Mon Oct 29 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 2.22-4
 + Revision: 820500
 - fix library permission for stripping (weird..)
