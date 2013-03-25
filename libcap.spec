@@ -143,8 +143,10 @@ rm -f %{buildroot}/%{_lib}/*.a
 %files -n %{libname}
 /%{_lib}/libcap.so.%{major}*
 
+%if %{with uclibc}
 %files -n uclibc-%{libname}
 %{uclibc_root}/%{_lib}/libcap.so.%{major}*
+%endif
 
 %files -n %{devname}
 %doc capfaq-0.2.txt
