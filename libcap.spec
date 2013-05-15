@@ -15,6 +15,7 @@ Source0:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/li
 Source1:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz.asc
 Source2:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 Patch0:		libcap-2.16-linkage_fix.diff
+Patch1:		libcap-2.22-cross.patch
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
 %if %{with uclibc}
@@ -84,6 +85,7 @@ Linux kernel capabilities.
 %prep
 %setup -q
 %patch0 -p0
+%patch1 -p1
 
 install -m644 %{SOURCE2} .
 
@@ -101,7 +103,7 @@ mv libcap/libcap*.so* uclibc
 make clean
 %endif
 
-%make prefix=%{_prefix} CFLAGS="%{uclibc_cflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" LDCONFIG="%{ldconfig}"
+%make prefix=%{_prefix} CC="%__cc" CFLAGS="%{uclibc_cflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" LDCONFIG="%{ldconfig}"
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
