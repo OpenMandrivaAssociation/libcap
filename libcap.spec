@@ -7,7 +7,7 @@
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.22
-Release:	8
+Release:	9
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
