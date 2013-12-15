@@ -100,7 +100,7 @@ mv libcap/libcap*.so* uclibc
 make clean
 %endif
 
-%make prefix=%{_prefix} CC="%__cc" CFLAGS="%{uclibc_cflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" LDCONFIG="%{ldconfig}"
+%make prefix=%{_prefix} CC="%__cc" CFLAGS="%{optflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" LDCONFIG="%{ldconfig}"
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
