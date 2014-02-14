@@ -14,8 +14,9 @@ Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
 Source0:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz
 Source1:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz.asc
 Source2:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
-Patch0:		libcap-2.16-linkage_fix.diff
-Patch1:		libcap-2.22-cross.patch
+Patch0:		libcap-2.22-buildflags.patch
+Patch1:		libcap-2.22-signed-sizeof-compare.patch
+
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
 %if %{with uclibc}
@@ -87,9 +88,6 @@ Linux kernel capabilities.
 %apply_patches
 
 install -m644 %{SOURCE2} .
-sed -i -e 's,^man_prefix=.*,man_prefix=\$\(prefix)/share,g' Make.Rules
-sed -i -e "s|^CFLAGS\ :=.*|CFLAGS\ :=%{optflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64|g" Make.Rules
-sed -i -e "s|^LDFLAGS\ :=.*|LDFLAGS\ :=%{ldflags}|g" Make.Rules
 
 %build
 %if %{with uclibc}
@@ -100,7 +98,8 @@ mv libcap/libcap*.so* uclibc
 make clean
 %endif
 
-%make prefix=%{_prefix} CC="%__cc" CFLAGS="%{optflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" LDCONFIG="%{ldconfig}"
+make PREFIX=%{_prefix} LIBDIR=%{_libdir} SBINDIR=%{_sbindir} \
+     INCDIR=%{_includedir} MANDIR=%{_mandir}
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
@@ -156,4 +155,3 @@ rm -f %{buildroot}/%{_lib}/*.a
 %endif
 %{_mandir}/man3/*.3*
 %{_mandir}/man1/capsh.1.*
-
