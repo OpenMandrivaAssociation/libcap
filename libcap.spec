@@ -98,7 +98,7 @@ mv libcap/libcap*.so* uclibc
 make clean
 %endif
 
-make PREFIX=%{_prefix} LIBDIR=%{_libdir} SBINDIR=%{_sbindir} \
+%make PREFIX=%{_prefix} LIBDIR=%{_libdir} SBINDIR=%{_sbindir} \
      INCDIR=%{_includedir} MANDIR=%{_mandir}
 
 %install
