@@ -6,16 +6,15 @@
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.22
-Release:	10
+Version:	2.24
+Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
-Source0:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz
-Source1:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.gz.asc
+Source0:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
+Source1:	http://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.sign
 Source2:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 Patch0:		libcap-2.22-buildflags.patch
-Patch1:		libcap-2.22-signed-sizeof-compare.patch
 
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
@@ -98,7 +97,7 @@ mv libcap/libcap*.so* uclibc
 make clean
 %endif
 
-%make PREFIX=%{_prefix} LIBDIR=%{_libdir} SBINDIR=%{_sbindir} \
+%make CC=%{__cc} PREFIX=%{_prefix} LIBDIR=%{_libdir} SBINDIR=%{_sbindir} \
      INCDIR=%{_includedir} MANDIR=%{_mandir}
 
 %install
@@ -155,3 +154,4 @@ rm -f %{buildroot}/%{_lib}/*.a
 %endif
 %{_mandir}/man3/*.3*
 %{_mandir}/man1/capsh.1.*
+%{_libdir}/pkgconfig/libcap.pc
