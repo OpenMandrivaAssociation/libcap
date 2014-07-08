@@ -103,7 +103,7 @@ make clean
 %install
 install -d %{buildroot}%{_sysconfdir}/security
 
-make install prefix=%{_prefix} LIBDIR=%{buildroot}/%{_lib} FAKEROOT=%{buildroot} RAISE_SETFCAP=no
+make install prefix=%{_prefix} LIBDIR=%{buildroot}/%{_lib} FAKEROOT=%{buildroot} PKGCONFIGDIR=%{buildroot}/%{_libdir}/pkgconfig/ RAISE_SETFCAP=no
 rm -f %{buildroot}/%{_lib}/libcap.so
 install -d %{buildroot}%{_libdir}
 ln -srf %{buildroot}/%{_lib}/libcap.so.%{major}.* %{buildroot}%{_libdir}/libcap.so
