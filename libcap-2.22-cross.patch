@@ -1,14 +1,47 @@
-diff --git a/Make.Rules b/Make.Rules
-index 8393738..3189659 100644
---- a/Make.Rules
-+++ b/Make.Rules
-@@ -47,12 +47,13 @@ MINOR=22
- KERNEL_HEADERS := $(topdir)/libcap/include
- IPATH += -fPIC -I$(topdir)/libcap/include -I$(KERNEL_HEADERS)
+diff -Naur cc/libcap-2.24/libcap/Makefile BUILD/libcap-2.24/libcap/Makefile
+--- cc/libcap-2.24/libcap/Makefile	2014-01-06 00:55:03.000000000 +0000
++++ libcap-2.24/libcap/Makefile	2015-03-19 23:50:22.206620284 +0000
+@@ -16,7 +16,7 @@
+ # no support).
+ ifeq ($(LIBATTR),yes)
+ FILES += cap_file
+-LDFLAGS += -lattr
++LDFLAGS += -lattr -L $(TARGETPREFIX)/lib
+ DEPS = -lattr
+ endif
+ 
+@@ -43,7 +43,7 @@
+ 		$< >$@
+ 
+ _makenames: _makenames.c cap_names.list.h
+-	$(BUILD_CC) $(BUILD_CFLAGS) $< -o $@
++	$(HOST_CC) $(BUILD_CFLAGS) $< -o $@
+ 
+ cap_names.h: _makenames
+ 	./_makenames > cap_names.h
+@@ -78,9 +78,9 @@
+ 	install -m 0644 $(MINLIBNAME) $(LIBDIR)/$(MINLIBNAME)
+ 	ln -sf $(MINLIBNAME) $(LIBDIR)/$(MAJLIBNAME)
+ 	ln -sf $(MAJLIBNAME) $(LIBDIR)/$(LIBNAME)
+-ifeq ($(FAKEROOT),)
+-	-/sbin/ldconfig
+-endif
++#ifeq ($(FAKEROOT),)
++#	-/sbin/ldconfig
++#endif
+ 	mkdir -p -m 0755 $(PKGCONFIGDIR)
+ 	install -m 0644 libcap.pc $(PKGCONFIGDIR)/libcap.pc
+ 
+diff -Naur cc/libcap-2.24/Make.Rules BUILD/libcap-2.24/Make.Rules
+--- cc/libcap-2.24/Make.Rules	2014-01-06 01:16:21.000000000 +0000
++++ libcap-2.24/Make.Rules	2015-03-19 23:45:39.740143365 +0000
+@@ -48,12 +48,13 @@
+ KERNEL_HEADERS := $(topdir)/libcap/include/uapi
+ IPATH += -fPIC -I$(KERNEL_HEADERS) -I$(topdir)/libcap/include
  
 -CC := gcc
 +HOST_CC := gcc
-+CC := $(CROSS_BASE)/bin/$(TARGET)-gcc
+++CC := $(CROSS_BASE)/bin/$(TARGET)-gcc
  CFLAGS := -O2 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
  BUILD_CC := $(CC)
  BUILD_CFLAGS := $(CFLAGS) $(IPATH)
@@ -19,7 +52,7 @@ index 8393738..3189659 100644
  DEBUG = -g #-DDEBUG
  WARNINGS=-Wall -Wwrite-strings \
          -Wpointer-arith -Wcast-qual -Wcast-align \
-@@ -61,7 +62,9 @@ WARNINGS=-Wall -Wwrite-strings \
+@@ -62,7 +63,9 @@
  LD=$(CC) -Wl,-x -shared
  LDFLAGS := #-g
  
@@ -30,46 +63,10 @@ index 8393738..3189659 100644
  INCS=$(topdir)/libcap/include/sys/capability.h
  LDFLAGS += -L$(topdir)/libcap
  CFLAGS += -Dlinux $(WARNINGS) $(DEBUG)
-diff --git a/libcap/Makefile b/libcap/Makefile
-index 4762c60..53dc9aa 100644
---- a/libcap/Makefile
-+++ b/libcap/Makefile
-@@ -16,7 +16,7 @@ FILES=cap_alloc cap_proc cap_extint cap_flag cap_text
- # no support).
- ifeq ($(LIBATTR),yes)
- FILES += cap_file
--LDFLAGS += -lattr
-+LDFLAGS += -lattr -L$(TARGETPREFIX)/lib
- endif
- 
- INCLS=libcap.h cap_names.h $(INCS)
-@@ -33,7 +33,7 @@ INCLUDE_GPERF_OUTPUT = -include $(GPERF_OUTPUT)
- endif
- 
- _makenames: _makenames.c cap_names.list.h
--	$(BUILD_CC) $(BUILD_CFLAGS) $< -o $@
-+	$(HOST_CC) $(BUILD_CFLAGS) $< -o $@
- 
- cap_names.h: _makenames
- 	./_makenames > cap_names.h
-@@ -68,9 +68,9 @@ install: all
- 	install -m 0644 $(MINLIBNAME) $(LIBDIR)/$(MINLIBNAME)
- 	ln -sf $(MINLIBNAME) $(LIBDIR)/$(MAJLIBNAME)
- 	ln -sf $(MAJLIBNAME) $(LIBDIR)/$(LIBNAME)
--ifeq ($(FAKEROOT),)
--	-/sbin/ldconfig
--endif
-+#ifeq ($(FAKEROOT),)
-+#	-/sbin/ldconfig
-+#endif
- 
- clean:
- 	$(LOCALCLEAN)
-diff --git a/progs/Makefile b/progs/Makefile
-index ef51dc6..e5b4790 100644
---- a/progs/Makefile
-+++ b/progs/Makefile
-@@ -14,7 +14,7 @@ BUILD=$(PROGS)
+diff -Naur cc/libcap-2.24/progs/Makefile BUILD/libcap-2.24/progs/Makefile
+--- cc/libcap-2.24/progs/Makefile	2013-12-16 04:46:28.000000000 +0000
++++ libcap-2.24/progs/Makefile	2015-03-19 23:51:41.935625476 +0000
+@@ -14,7 +14,7 @@
  ifneq ($(DYNAMIC),yes)
  LDFLAGS += --static
  endif
