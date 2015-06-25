@@ -21,7 +21,6 @@ BuildRequires:	pam-devel
 %if %{with uclibc}
 BuildRequires:	uClibc-devel >= 0.9.33.2-15
 BuildRequires:	uclibc-attr-devel
-BuildRequires:	uclibc-pam-devel
 %endif
 
 %description
