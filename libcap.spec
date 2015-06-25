@@ -76,11 +76,11 @@ Conflicts:	%{devname} < 2.24-5
 %description -n	uclibc-%{devname}
 Development files (Headers, libraries for static linking, etc) for %{name}.
 
-uclibc-%{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
-draft 15 capabilities.
+uclibc-%{name} is a library for getting and setting POSIX.1e 
+(formerly POSIX 6) draft 15 capabilities.
 
-Install uclibc-%{name}-devel if you want to develop or compile applications supporting
-Linux kernel capabilities.
+Install uclibc-%{name}-devel if you want to develop or compile
+applications supporting Linux kernel capabilities.
 %endif
 
 %package -n	%{devname}
