@@ -7,7 +7,7 @@
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.24
-Release:	4
+Release:	5
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
@@ -20,6 +20,8 @@ BuildRequires:	attr-devel
 BuildRequires:	pam-devel
 %if %{with uclibc}
 BuildRequires:	uClibc-devel >= 0.9.33.2-15
+BuildRequires:	uclibc-attr-devel
+BuildRequires:	uclibc-pam-devel
 %endif
 
 %description
@@ -53,6 +55,7 @@ Provides:	%{name} = %{version}-%{release}
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
+%if %{with uclibc}
 %package -n	uclibc-%{libname}
 Summary:	Library for getting and setting POSIX.1e capabilities (uClibc linked)
 Group:		System/Kernel and hardware
@@ -62,13 +65,29 @@ Provides:	%{name} = %{version}-%{release}
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
+%package -n	uclibc-%{devname}
+Summary:	Development files for %{name}
+Group:		Development/Kernel
+Requires:	uclibc-%{libname} = %{EVRD}
+Requires:	%{devname} = %{EVRD}
+Provides:	uclibc-%{name}-devel = %{EVRD}
+Provides:	uclibc-cap-devel = %{EVRD}
+Conflicts:	%{devname} < 2.24-5
+
+%description -n	uclibc-%{devname}
+Development files (Headers, libraries for static linking, etc) for %{name}.
+
+uclibc-%{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
+draft 15 capabilities.
+
+Install uclibc-%{name}-devel if you want to develop or compile applications supporting
+Linux kernel capabilities.
+%endif
+
 %package -n	%{devname}
 Summary:	Development files for %{name}
 Group:		Development/Kernel
 Requires:	%{libname} >= %{version}-%{release}
-%if %{with uclibc}
-Requires:	uclibc-%{libname} >= %{version}-%{release}
-%endif
 Provides:	%{name}-devel = %{version}-%{release}
 Provides:	cap-devel = %{version}-%{release}
 Conflicts:	%{mklibname cap 1 -d}
@@ -143,15 +162,15 @@ rm -f %{buildroot}/%{_lib}/*.a
 %if %{with uclibc}
 %files -n uclibc-%{libname}
 %{uclibc_root}/%{_lib}/libcap.so.%{major}*
+
+%files -n uclibc-%{devname}
+%{uclibc_root}%{_libdir}/libcap.so
 %endif
 
 %files -n %{devname}
 %doc capfaq-0.2.txt
 %{_includedir}/*
 %{_libdir}/libcap.so
-%if %{with uclibc}
-%{uclibc_root}%{_libdir}/libcap.so
-%endif
 %{_mandir}/man3/*.3*
 %{_mandir}/man1/capsh.1.*
 %{_libdir}/pkgconfig/libcap.pc
