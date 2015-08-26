@@ -2,12 +2,12 @@
 %define libname %mklibname cap %{major}
 %define devname %mklibname cap -d
 
-%bcond_without uclibc
+%bcond_with uclibc
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.24
-Release:	6
+Release:	7
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
