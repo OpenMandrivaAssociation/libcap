@@ -7,14 +7,15 @@
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.24
-Release:	7
+Release:	8
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
 Source0:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
 Source1:	http://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.sign
 Source2:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
-Patch0:		libcap-2.22-buildflags.patch
+Patch0:		libcap-2.24-build-system-fixes.patch
+Patch1:		libcap-2.22-no-perl.patch
 
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
@@ -115,8 +116,9 @@ mv libcap/libcap*.so* uclibc
 make clean
 %endif
 
-%make CC=%{__cc} PREFIX=%{_prefix} LIBDIR=%{_libdir} SBINDIR=%{_sbindir} \
-     INCDIR=%{_includedir} MANDIR=%{_mandir}
+%make BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} LIBDIR=%{_libdir} SBINDIR=%{_sbindir} \
+     INCDIR=%{_includedir} MANDIR=%{_mandir} CFLAGS="%{optflags}"
+#LDFLAGS="%{ldflags}"
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
