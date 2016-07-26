@@ -91,7 +91,7 @@ diff -Naur libcap-2.25/pam_cap/Makefile libcap-2.25.tpg/pam_cap/Makefile
  
  pam_cap.so: pam_cap.o
 -	$(LD) $(LDFLAGS) -o pam_cap.so $< $(LDLIBS)
-+	$(LD) $(CFLAGS) $(LDFLAGS) -o pam_cap.so $< $(LDLIBS)
++	$(LD) $(CFLAGS) $(LDFLAGS) -o pam_cap.so $< $(LDLIBS) -lpam
  
  pam_cap.o: pam_cap.c
 -	$(CC) $(CFLAGS) $(IPATH) -c $< -o $@
