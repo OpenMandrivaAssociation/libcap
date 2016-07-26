@@ -1,14 +1,12 @@
-diff --git a/Make.Rules b/Make.Rules
-index ec1c474..979a724 100644
---- a/Make.Rules
-+++ b/Make.Rules
-@@ -45,27 +45,29 @@ MINOR=24
- 
+diff -Naur libcap-2.25/Make.Rules libcap-2.25.tpg/Make.Rules
+--- libcap-2.25/Make.Rules	2016-01-31 01:14:53.000000000 +0000
++++ libcap-2.25.tpg/Make.Rules	2016-07-26 19:49:38.171245364 +0000
+@@ -46,27 +46,30 @@
  # Compilation specifics
  
--KERNEL_HEADERS := $(topdir)/libcap/include/uapi
+ KERNEL_HEADERS := $(topdir)/libcap/include/uapi
 -IPATH += -fPIC -I$(KERNEL_HEADERS) -I$(topdir)/libcap/include
--
+ 
 -CC := gcc
 -CFLAGS := -O2 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 -BUILD_CC := $(CC)
@@ -29,9 +27,9 @@ index ec1c474..979a724 100644
  LD=$(CC) -Wl,-x -shared
 -LDFLAGS := #-g
 +LDFLAGS ?= #-g
+ BUILD_GPERF := $(shell which gperf >/dev/null 2>/dev/null && echo yes)
  
 -SYSTEM_HEADERS = /usr/include
-+KERNEL_HEADERS = $(topdir)/libcap/include/uapi
 +LIBCAP_CPPFLAGS = -I$(KERNEL_HEADERS) -I$(topdir)/libcap/include
 +LIBCAP_CPPFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 +CPPFLAGS += $(LIBCAP_CPPFLAGS)
@@ -42,22 +40,12 @@ index ec1c474..979a724 100644
 +CPPFLAGS += -Dlinux
 +CFLAGS += $(WARNINGS) $(DEBUG)
  PAM_CAP := $(shell if [ -f /usr/include/security/pam_modules.h ]; then echo yes ; else echo no ; fi)
- INDENT := $(shell if [ -n "$(which indent 2>/dev/null)" ]; then echo "| indent -kr" ; fi)
+ INDENT := $(shell if [ -n "$$(which indent 2>/dev/null)" ]; then echo "| indent -kr" ; fi)
  DYNAMIC := $(shell if [ ! -d "$(topdir)/.git" ]; then echo yes; fi)
-diff --git a/libcap/Makefile b/libcap/Makefile
-index 20ab00f..043dd98 100644
---- a/libcap/Makefile
-+++ b/libcap/Makefile
-@@ -16,7 +16,7 @@ FILES=cap_alloc cap_proc cap_extint cap_flag cap_text
- # no support).
- ifeq ($(LIBATTR),yes)
- FILES += cap_file
--LDFLAGS += -lattr
-+LDLIBS += -lattr
- DEPS = -lattr
- endif
- 
-@@ -25,6 +25,7 @@ OBJS=$(addsuffix .o, $(FILES))
+diff -Naur libcap-2.25/libcap/Makefile libcap-2.25.tpg/libcap/Makefile
+--- libcap-2.25/libcap/Makefile	2016-01-31 00:01:41.000000000 +0000
++++ libcap-2.25.tpg/libcap/Makefile	2016-07-26 19:54:26.603239609 +0000
+@@ -17,6 +17,7 @@
  MAJLIBNAME=$(LIBNAME).$(VERSION)
  MINLIBNAME=$(MAJLIBNAME).$(MINOR)
  GPERF_OUTPUT = _caps_output.gperf
@@ -65,7 +53,7 @@ index 20ab00f..043dd98 100644
  
  all: $(MINLIBNAME) $(STALIBNAME) libcap.pc
  
-@@ -43,7 +44,7 @@ libcap.pc: libcap.pc.in
+@@ -35,7 +36,7 @@
  		$< >$@
  
  _makenames: _makenames.c cap_names.list.h
@@ -74,13 +62,7 @@ index 20ab00f..043dd98 100644
  
  cap_names.h: _makenames
  	./_makenames > cap_names.h
-@@ -60,15 +61,15 @@ $(STALIBNAME): $(OBJS)
- 	$(RANLIB) $@
- 
- $(MINLIBNAME): $(OBJS)
--	$(LD) $(CFLAGS) $(LDFLAGS) -Wl,-soname,$(MAJLIBNAME) -o $@ $^
-+	$(LD) $(CFLAGS) $(LDFLAGS) -Wl,-soname,$(MAJLIBNAME) -o $@ $^ $(LDLIBS)
- 	ln -sf $(MINLIBNAME) $(MAJLIBNAME)
+@@ -57,10 +58,10 @@
  	ln -sf $(MAJLIBNAME) $(LIBNAME)
  
  %.o: %.c $(INCLS)
@@ -92,22 +74,20 @@ index 20ab00f..043dd98 100644
 +	$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDE_GPERF_OUTPUT) -c $< -o $@
  
  install: all
- 	mkdir -p -m 0755 $(INCDIR)/sys
-diff --git a/pam_cap/Makefile b/pam_cap/Makefile
-index 9ca5bef..bdae933 100644
---- a/pam_cap/Makefile
-+++ b/pam_cap/Makefile
-@@ -9,6 +9,8 @@ include ../Make.Rules
+ 	mkdir -p -m 0755 $(FAKEROOT)$(INCDIR)/sys
+diff -Naur libcap-2.25/pam_cap/Makefile libcap-2.25.tpg/pam_cap/Makefile
+--- libcap-2.25/pam_cap/Makefile	2014-05-31 20:19:10.000000000 +0000
++++ libcap-2.25.tpg/pam_cap/Makefile	2016-07-26 19:55:45.895238028 +0000
+@@ -8,6 +8,7 @@
+ # does, *verify that it does*, and if you observe that it fails as
  # written (and you know why it fails), email me and explain why. Thanks!
  LDLIBS += -L../libcap -lcap
- 
 +CFLAGS += -fPIC
-+
+ 
  all: pam_cap.so
  	$(MAKE) testcompile
- 
-@@ -17,13 +19,13 @@ install: all
- 	install -m 0755 pam_cap.so $(LIBDIR)/security
+@@ -17,13 +18,13 @@
+ 	install -m 0755 pam_cap.so $(FAKEROOT)$(LIBDIR)/security
  
  pam_cap.so: pam_cap.o
 -	$(LD) $(LDFLAGS) -o pam_cap.so $< $(LDLIBS)
@@ -123,11 +103,10 @@ index 9ca5bef..bdae933 100644
  
  clean:
  	rm -f *.o *.so testcompile *~
-diff --git a/progs/Makefile b/progs/Makefile
-index ef51dc6..c261f57 100644
---- a/progs/Makefile
-+++ b/progs/Makefile
-@@ -22,7 +22,7 @@ $(BUILD): %: %.o
+diff -Naur libcap-2.25/progs/Makefile libcap-2.25.tpg/progs/Makefile
+--- libcap-2.25/progs/Makefile	2016-01-31 00:01:41.000000000 +0000
++++ libcap-2.25.tpg/progs/Makefile	2016-07-26 19:56:19.509237357 +0000
+@@ -19,7 +19,7 @@
  	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
  
  %.o: %.c $(INCS)
@@ -135,4 +114,4 @@ index ef51dc6..c261f57 100644
 +	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  
  install: all
- 	mkdir -p -m 0755 $(SBINDIR)
+ 	mkdir -p -m 0755 $(FAKEROOT)$(SBINDIR)
