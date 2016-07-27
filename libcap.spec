@@ -2,43 +2,36 @@
 %define libname %mklibname cap %{major}
 %define devname %mklibname cap -d
 
-%bcond_with uclibc
-
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.24
-Release:	10
+Version:	2.25
+Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
 Source0:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
-Source1:	http://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.sign
-Source2:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
+Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 Patch0:		libcap-2.24-build-system-fixes.patch
 Patch1:		libcap-2.22-no-perl.patch
 
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
-%if %{with uclibc}
-BuildRequires:	uClibc-devel >= 0.9.33.2-15
-BuildRequires:	uclibc-attr-devel
-%endif
 
 %description
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
-%package	utils
+%package utils
 Summary:	Administration tools for POSIX.1e capabilities
 Group:		System/Kernel and hardware
 
-%description	utils
+%description utils
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
 This package contains utilities to control these capabilities.
 
-%package -n	pam_cap
+%package -n pam_cap
 Summary:	PAM module for getting and setting POSIX.1e capabilities
 Group:		System/Libraries
 
@@ -46,50 +39,21 @@ Group:		System/Libraries
 The purpose of this module is to enforce inheritable capability sets for a
 specified user.
 
-%package -n	%{libname}
+%package -n %{libname}
 Summary:	Library for getting and setting POSIX.1e capabilities
 Group:		System/Kernel and hardware
-Provides:	%{name} = %{version}-%{release}
+Provides:	%{name} = %{EVRD}
 
 %description -n	%{libname}
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
-%if %{with uclibc}
-%package -n	uclibc-%{libname}
-Summary:	Library for getting and setting POSIX.1e capabilities (uClibc linked)
-Group:		System/Kernel and hardware
-Provides:	%{name} = %{version}-%{release}
-
-%description -n	uclibc-%{libname}
-%{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
-draft 15 capabilities.
-
-%package -n	uclibc-%{devname}
+%package -n %{devname}
 Summary:	Development files for %{name}
 Group:		Development/Kernel
-Requires:	uclibc-%{libname} = %{EVRD}
-Requires:	%{devname} = %{EVRD}
-Provides:	uclibc-%{name}-devel = %{EVRD}
-Provides:	uclibc-cap-devel = %{EVRD}
-Conflicts:	%{devname} < 2.24-5
-
-%description -n	uclibc-%{devname}
-Development files (Headers, libraries for static linking, etc) for %{name}.
-
-uclibc-%{name} is a library for getting and setting POSIX.1e 
-(formerly POSIX 6) draft 15 capabilities.
-
-Install uclibc-%{name}-devel if you want to develop or compile
-applications supporting Linux kernel capabilities.
-%endif
-
-%package -n	%{devname}
-Summary:	Development files for %{name}
-Group:		Development/Kernel
-Requires:	%{libname} >= %{version}-%{release}
-Provides:	%{name}-devel = %{version}-%{release}
-Provides:	cap-devel = %{version}-%{release}
+Requires:	%{libname} >= %{EVRD}
+Provides:	%{name}-devel = %{EVRD}
+Provides:	cap-devel = %{EVRD}
 Conflicts:	%{mklibname cap 1 -d}
 
 %description -n	%{devname}
@@ -105,35 +69,28 @@ Linux kernel capabilities.
 %setup -q
 %apply_patches
 
-install -m644 %{SOURCE2} .
+install -m644 %{SOURCE1} .
 
 %build
-%if %{with uclibc}
-mkdir -p uclibc
-# we build without libattr support for now..
-%make -C libcap prefix=%{_prefix} CC=%{uclibc_cc} CFLAGS="%{uclibc_cflags} -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" LDCONFIG="%{ldconfig}" LIBATTR=no
-mv libcap/libcap*.so* uclibc
-make clean
-%endif
+%setup_compile_flags
 
-%make BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} LIBDIR=%{_libdir} SBINDIR=%{_sbindir} \
-     INCDIR=%{_includedir} MANDIR=%{_mandir} CFLAGS="%{optflags}"
-#LDFLAGS="%{ldflags}"
+%make BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags}" LDFLAGS="%{ldflags}"
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
 
-make install prefix=%{_prefix} LIBDIR=%{buildroot}/%{_lib} FAKEROOT=%{buildroot} PKGCONFIGDIR=%{buildroot}/%{_libdir}/pkgconfig/ RAISE_SETFCAP=no
+make install RAISE_SETFCAP=no \
+	DESTDIR=%{buildroot} \
+	LIBDIR=/%{_lib} \
+	SBINDIR=%{_sbindir} \
+	INCDIR=%{_includedir} \
+	MANDIR=%{_mandir}/ \
+	PKGCONFIGDIR=%{_libdir}/pkgconfig/
+
 rm -f %{buildroot}/%{_lib}/libcap.so
 install -d %{buildroot}%{_libdir}
 ln -srf %{buildroot}/%{_lib}/libcap.so.%{major}.* %{buildroot}%{_libdir}/libcap.so
 chmod 755 %{buildroot}/%{_lib}/libcap.so.%{major}.*
-
-%if %{with uclibc}
-install -d %{buildroot}%{uclibc_root}{/%{_lib},%{_libdir}}
-cp -a uclibc/libcap.so.%{major}* %{buildroot}%{uclibc_root}/%{_lib}
-ln -srf %{buildroot}%{uclibc_root}/%{_lib}/libcap.so.%{major}.* %{buildroot}%{uclibc_root}%{_libdir}/libcap.so
-%endif
 
 # conflics with man-pages
 rm -f %{buildroot}%{_mandir}/man2/*
@@ -159,14 +116,6 @@ rm -f %{buildroot}/%{_lib}/*.a
 
 %files -n %{libname}
 /%{_lib}/libcap.so.%{major}*
-
-%if %{with uclibc}
-%files -n uclibc-%{libname}
-%{uclibc_root}/%{_lib}/libcap.so.%{major}*
-
-%files -n uclibc-%{devname}
-%{uclibc_root}%{_libdir}/libcap.so
-%endif
 
 %files -n %{devname}
 %doc capfaq-0.2.txt
