@@ -5,7 +5,7 @@
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.25
-Release:	1
+Release:	2
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
@@ -74,7 +74,8 @@ install -m644 %{SOURCE1} .
 %build
 %setup_compile_flags
 
-%make BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags}" LDFLAGS="%{ldflags}"
+# cb ensure fPIC set for i586 as otherwise it is missed causing issues
+%make BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -fPIC" LDFLAGS="%{ldflags}"
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
