@@ -27,15 +27,19 @@ draft 15 capabilities.
 Summary:	Administration tools for POSIX.1e capabilities
 Group:		System/Kernel and hardware
 
-%package	docs
-Summary:	Docs for %{libname}
-Group:		System/Kernel and hardware
-
 %description utils
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
 This package contains utilities to control these capabilities.
+
+%package	docs
+Summary:	Docs for %{libname}
+Group:		System/Kernel and hardware
+
+%description	docs
+%{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
+draft 15 capabilities.
 
 %package -n pam_cap
 Summary:	PAM module for getting and setting POSIX.1e capabilities
