@@ -4,16 +4,15 @@
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.25
-Release:	4
+Version:	2.26
+Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
-Source0:	http://mirror.nexcess.net/kernel.org/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
+Source0:	http://ftp.be.debian.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
 Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 Patch0:		libcap-2.25-build-system-fixes.patch
-Patch1:		libcap-2.22-no-perl.patch
-Patch2:		libcap-2.25-gperf.patch
+Patch1:		libcap-2.26-no-perl.patch
 Patch3:		pam-linking.patch
 
 BuildRequires:	attr-devel
