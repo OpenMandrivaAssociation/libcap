@@ -4,7 +4,7 @@
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.26
+Version:	2.27
 Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
@@ -75,8 +75,7 @@ Install %{name}-devel if you want to develop or compile applications supporting
 Linux kernel capabilities.
 
 %prep
-%setup -q
-%apply_patches
+%autosetup -p1
 
 install -m644 %{SOURCE1} .
 
@@ -84,12 +83,12 @@ install -m644 %{SOURCE1} .
 %setup_compile_flags
 
 # cb ensure fPIC set for i586 as otherwise it is missed causing issues
-%make BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -fPIC" LDFLAGS="%{ldflags}"
+%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -fPIC" LDFLAGS="%{ldflags}"
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
 
-make install RAISE_SETFCAP=no \
+%make_install RAISE_SETFCAP=no \
 	DESTDIR=%{buildroot} \
 	LIBDIR=/%{_lib} \
 	SBINDIR=%{_sbindir} \
