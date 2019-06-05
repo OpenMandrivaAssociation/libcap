@@ -5,7 +5,7 @@
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.27
-Release:	1
+Release:	2
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
@@ -14,7 +14,6 @@ Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/cap
 Patch0:		libcap-2.25-build-system-fixes.patch
 Patch1:		libcap-2.26-no-perl.patch
 Patch3:		pam-linking.patch
-
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
 
@@ -36,7 +35,7 @@ This package contains utilities to control these capabilities.
 Summary:	Docs for %{libname}
 Group:		System/Kernel and hardware
 
-%description	docs
+%description docs
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
@@ -44,7 +43,7 @@ draft 15 capabilities.
 Summary:	PAM module for getting and setting POSIX.1e capabilities
 Group:		System/Libraries
 
-%description -n	pam_cap
+%description -n pam_cap
 The purpose of this module is to enforce inheritable capability sets for a
 specified user.
 
@@ -53,7 +52,7 @@ Summary:	Library for getting and setting POSIX.1e capabilities
 Group:		System/Kernel and hardware
 Provides:	%{name} = %{EVRD}
 
-%description -n	%{libname}
+%description -n %{libname}
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
@@ -61,9 +60,10 @@ draft 15 capabilities.
 Summary:	Development files for %{name}
 Group:		Development/Kernel
 Requires:	%{libname} >= %{EVRD}
+Requires:	%{name}-utils >= %{EVRD}
 Provides:	%{name}-devel = %{EVRD}
 Provides:	cap-devel = %{EVRD}
-Conflicts:	%{mklibname cap 1 -d}
+Conflicts:	%{mklibname cap 1 -d} < 2.27-2
 
 %description -n	%{devname}
 Development files (Headers, libraries for static linking, etc) for %{name}.
