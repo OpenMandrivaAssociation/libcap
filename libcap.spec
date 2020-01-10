@@ -4,16 +4,14 @@
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.27
-Release:	2
+Version:	2.30
+Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
 Source0:	http://ftp.be.debian.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
 Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
-Patch0:		libcap-2.25-build-system-fixes.patch
-Patch1:		libcap-2.26-no-perl.patch
-Patch3:		pam-linking.patch
+Patch0:		libcap-2.29-build-system-fixes.patch
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
 
@@ -83,7 +81,7 @@ install -m644 %{SOURCE1} .
 %setup_compile_flags
 
 # cb ensure fPIC set for i586 as otherwise it is missed causing issues
-%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -fPIC" LDFLAGS="%{ldflags}"
+%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -fPIC" LDFLAGS="%{ldflags} -lpam"
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
@@ -135,3 +133,4 @@ rm -f %{buildroot}/%{_lib}/*.a
 %{_mandir}/man3/*.3*
 %{_mandir}/man1/capsh.1.*
 %{_libdir}/pkgconfig/libcap.pc
+%{_libdir}/pkgconfig/libpsx.pc
