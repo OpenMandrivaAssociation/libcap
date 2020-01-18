@@ -4,7 +4,7 @@
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.30
+Version:	2.31
 Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
@@ -112,8 +112,7 @@ rm -f %{buildroot}/%{_lib}/*.a
 %{_sbindir}/getcap
 %{_sbindir}/getpcaps
 %{_sbindir}/setcap
-%{_mandir}/man8/getcap.8*
-%{_mandir}/man8/setcap.8*
+%{_mandir}/man8/*.8*
 
 %files docs
 %doc CHANGELOG License README contrib
