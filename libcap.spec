@@ -1,10 +1,19 @@
+# libcap is used by systemd, libsystemd is used by wine
+%ifarch %{x86_64}
+%bcond_without compat32
+%else
+%bcond_with compat32
+%endif
+
 %define major 2
 %define libname %mklibname cap %{major}
 %define devname %mklibname cap -d
+%define lib32name libcap%{major}
+%define dev32name libcap-devel
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.32
+Version:	2.34
 Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
@@ -14,6 +23,9 @@ Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/cap
 Patch0:		libcap-2.29-build-system-fixes.patch
 BuildRequires:	attr-devel
 BuildRequires:	pam-devel
+%if %{with compat32}
+BuildRequires:	devel(libattr)
+%endif
 
 %description
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
@@ -59,7 +71,6 @@ Summary:	Development files for %{name}
 Group:		Development/Kernel
 Requires:	%{libname} >= %{EVRD}
 Requires:	%{name}-utils >= %{EVRD}
-Provides:	%{name}-devel = %{EVRD}
 Provides:	cap-devel = %{EVRD}
 Conflicts:	%{mklibname cap 1 -d} < 2.27-2
 
@@ -72,6 +83,31 @@ draft 15 capabilities.
 Install %{name}-devel if you want to develop or compile applications supporting
 Linux kernel capabilities.
 
+%if %{with compat32}
+%package -n %{lib32name}
+Summary:	Library for getting and setting POSIX.1e capabilities (32-bit)
+Group:		System/Kernel and hardware
+
+%description -n %{lib32name}
+%{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
+draft 15 capabilities.
+
+%package -n %{dev32name}
+Summary:	Development files for %{name} (32-bit)
+Group:		Development/Kernel
+Requires:	%{devname} >= %{EVRD}
+Requires:	%{lib32name} >= %{EVRD}
+
+%description -n	%{dev32name}
+Development files (Headers, libraries for static linking, etc) for %{name}.
+
+%{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
+draft 15 capabilities.
+
+Install %{name}-devel if you want to develop or compile applications supporting
+Linux kernel capabilities.
+%endif
+
 %prep
 %autosetup -p1
 
@@ -80,11 +116,32 @@ install -m644 %{SOURCE1} .
 %build
 %setup_compile_flags
 
+%if %{with compat32}
+mkdir build32
+cp -a $(ls -1 |grep -v build32) build32/
+cd build32
+%make_build BUILD_CC="gcc -m32" CC="gcc -m32" PREFIX=%{_prefix} CFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g;s,-mx32,,g') -m32" LDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g;s,-mx32,,g') -m32" PAM_CAP=no GOLANG=no
+cd ..
+%endif
+
 # cb ensure fPIC set for i586 as otherwise it is missed causing issues
-%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -fPIC" LDFLAGS="%{ldflags} -lpam"
+# FIXME get rid of GOLANG=no once we know why it's failing to build
+%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -fPIC" LDFLAGS="%{ldflags} -lpam" GOLANG=no
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
+
+%if %{with compat32}
+%make_install RAISE_SETFCAP=no \
+	DESTDIR=%{buildroot} \
+	LIBDIR=%{_prefix}/lib \
+	SBINDIR=%{_sbindir} \
+	INCDIR=%{_includedir} \
+	MANDIR=%{_mandir}/ \
+	PAM_CAP=no GOLANG=no \
+	PKGCONFIGDIR=%{_prefix}/lib/pkgconfig/
+rm -f %{buildroot}/%{_prefix}/lib/*.a
+%endif
 
 %make_install RAISE_SETFCAP=no \
 	DESTDIR=%{buildroot} \
@@ -92,6 +149,7 @@ install -d %{buildroot}%{_sysconfdir}/security
 	SBINDIR=%{_sbindir} \
 	INCDIR=%{_includedir} \
 	MANDIR=%{_mandir}/ \
+	GOLANG=no \
 	PKGCONFIGDIR=%{_libdir}/pkgconfig/
 
 rm -f %{buildroot}/%{_lib}/libcap.so
@@ -133,3 +191,13 @@ rm -f %{buildroot}/%{_lib}/*.a
 %{_mandir}/man1/capsh.1.*
 %{_libdir}/pkgconfig/libcap.pc
 %{_libdir}/pkgconfig/libpsx.pc
+
+%if %{with compat32}
+%files -n %{lib32name}
+%{_prefix}/lib/libcap.so.%{major}*
+
+%files -n %{dev32name}
+%{_prefix}/lib/libcap.so
+%{_prefix}/lib/pkgconfig/libcap.pc
+%{_prefix}/lib/pkgconfig/libpsx.pc
+%endif
