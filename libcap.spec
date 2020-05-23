@@ -14,7 +14,7 @@
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.34
-Release:	1
+Release:	2
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
@@ -132,6 +132,7 @@ cd ..
 install -d %{buildroot}%{_sysconfdir}/security
 
 %if %{with compat32}
+cd build32
 %make_install RAISE_SETFCAP=no \
 	DESTDIR=%{buildroot} \
 	LIBDIR=%{_prefix}/lib \
@@ -141,6 +142,7 @@ install -d %{buildroot}%{_sysconfdir}/security
 	PAM_CAP=no GOLANG=no \
 	PKGCONFIGDIR=%{_prefix}/lib/pkgconfig/
 rm -f %{buildroot}/%{_prefix}/lib/*.a
+cd ..
 %endif
 
 %make_install RAISE_SETFCAP=no \
