@@ -7,13 +7,15 @@
 
 %define major 2
 %define libname %mklibname cap %{major}
+%define libpsx %mklibname psx %{major}
 %define devname %mklibname cap -d
 %define lib32name libcap%{major}
+%define lib32psx libpsx%{major}
 %define dev32name libcap-devel
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.44
+Version:	2.45
 Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
@@ -66,10 +68,19 @@ Provides:	%{name} = %{EVRD}
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
+%package -n %{libpsx}
+Summary:	Library for getting and setting POSIX.1e capabilities
+Group:		System/Kernel and hardware
+
+%description -n %{libpsx}
+%{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
+draft 15 capabilities.
+
 %package -n %{devname}
 Summary:	Development files for %{name}
 Group:		Development/Kernel
 Requires:	%{libname} >= %{EVRD}
+Requires:	%{libpsx} >= %{EVRD}
 Requires:	%{name}-utils >= %{EVRD}
 Provides:	cap-devel = %{EVRD}
 Conflicts:	%{mklibname cap 1 -d} < 2.27-2
@@ -92,11 +103,20 @@ Group:		System/Kernel and hardware
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
 draft 15 capabilities.
 
+%package -n %{lib32psx}
+Summary:	Library for getting and setting POSIX.1e capabilities (32-bit)
+Group:		System/Kernel and hardware
+
+%description -n %{lib32psx}
+%{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
+draft 15 capabilities.
+
 %package -n %{dev32name}
 Summary:	Development files for %{name} (32-bit)
 Group:		Development/Kernel
 Requires:	%{devname} >= %{EVRD}
 Requires:	%{lib32name} >= %{EVRD}
+Requires:	%{lib32psx} >= %{EVRD}
 
 %description -n	%{dev32name}
 Development files (Headers, libraries for static linking, etc) for %{name}.
@@ -110,6 +130,7 @@ Linux kernel capabilities.
 
 %prep
 %autosetup -p1
+sed -i 's!--static!!g' tests/Makefile progs/Makefile
 
 install -m644 %{SOURCE1} .
 
@@ -155,9 +176,12 @@ cd ..
 	PKGCONFIGDIR=%{_libdir}/pkgconfig/
 
 rm -f %{buildroot}/%{_lib}/libcap.so
+rm -f %{buildroot}/%{_lib}/libpsx.so
 install -d %{buildroot}%{_libdir}
 ln -srf %{buildroot}/%{_lib}/libcap.so.%{major}.* %{buildroot}%{_libdir}/libcap.so
+ln -srf %{buildroot}/%{_lib}/libpsx.so.%{major}.* %{buildroot}%{_libdir}/libpsx.so
 chmod 755 %{buildroot}/%{_lib}/libcap.so.%{major}.*
+chmod 755 %{buildroot}/%{_lib}/libpsx.so.%{major}.*
 
 # conflics with man-pages
 rm -f %{buildroot}%{_mandir}/man2/*
@@ -185,10 +209,14 @@ rm -f %{buildroot}/%{_lib}/*.a
 %files -n %{libname}
 /%{_lib}/libcap.so.%{major}*
 
+%files -n %{libpsx}
+/%{_lib}/libpsx.so.%{major}*
+
 %files -n %{devname}
 %doc capfaq-0.2.txt
 %{_includedir}/*
 %{_libdir}/libcap.so
+%{_libdir}/libpsx.so
 %{_mandir}/man3/*.3*
 %{_mandir}/man1/capsh.1.*
 %{_libdir}/pkgconfig/libcap.pc
@@ -198,8 +226,12 @@ rm -f %{buildroot}/%{_lib}/*.a
 %files -n %{lib32name}
 %{_prefix}/lib/libcap.so.%{major}*
 
+%files -n %{lib32psx}
+%{_prefix}/lib/libpsx.so.%{major}*
+
 %files -n %{dev32name}
 %{_prefix}/lib/libcap.so
+%{_prefix}/lib/libpsx.so
 %{_prefix}/lib/pkgconfig/libcap.pc
 %{_prefix}/lib/pkgconfig/libpsx.pc
 %endif
