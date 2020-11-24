@@ -16,14 +16,14 @@
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.45
-Release:	1
+Release:	2
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
 Source0:	http://ftp.be.debian.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
 Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 #Patch0:		libcap-2.29-build-system-fixes.patch
-BuildRequires:	attr-devel
+BuildRequires:	pkgconfig(libattr)
 BuildRequires:	pam-devel
 %if %{with compat32}
 BuildRequires:	devel(libattr)
@@ -135,7 +135,7 @@ sed -i 's!--static!!g' tests/Makefile progs/Makefile
 install -m644 %{SOURCE1} .
 
 %build
-%setup_compile_flags
+%setup_build_flags
 
 %if %{with compat32}
 mkdir build32
