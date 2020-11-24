@@ -135,7 +135,7 @@ sed -i 's!--static!!g' tests/Makefile progs/Makefile
 install -m644 %{SOURCE1} .
 
 %build
-%setup_build_flags
+%set_build_flags
 
 %if %{with compat32}
 mkdir build32
