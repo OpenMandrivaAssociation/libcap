@@ -15,12 +15,12 @@
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.49
+Version:	2.50
 Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
-Source0:	http://ftp.be.debian.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
+Source0:	https://mirrors.edge.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
 Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 #Patch0:		libcap-2.29-build-system-fixes.patch
 BuildRequires:	pkgconfig(libattr)
@@ -192,7 +192,6 @@ install -m0640 pam_cap/capability.conf %{buildroot}%{_sysconfdir}/security/
 rm -f %{buildroot}/%{_lib}/*.a
 
 %files utils
-%{_sbindir}/capsh
 %{_sbindir}/getcap
 %{_sbindir}/getpcaps
 %{_sbindir}/setcap
