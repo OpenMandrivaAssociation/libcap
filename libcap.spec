@@ -15,7 +15,7 @@
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.50
+Version:	2.51
 Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
@@ -141,13 +141,13 @@ install -m644 %{SOURCE1} .
 mkdir build32
 cp -a $(ls -1 |grep -v build32) build32/
 cd build32
-%make_build BUILD_CC="gcc -m32" CC="gcc -m32" PREFIX=%{_prefix} CFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g;s,-mx32,,g') -m32" LDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g;s,-mx32,,g') -m32" PAM_CAP=no GOLANG=no
+%make_build BUILD_CC="gcc -m32" CC="gcc -m32" PREFIX=%{_prefix} CFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g;s,-mx32,,g') -m32" LDFLAGS="$(echo %{build_ldflags} |sed -e 's,-m64,,g;s,-mx32,,g') -m32" PAM_CAP=no GOLANG=no
 cd ..
 %endif
 
 # cb ensure fPIC set for i586 as otherwise it is missed causing issues
 # FIXME get rid of GOLANG=no once we know why it's failing to build
-%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -fPIC" LDFLAGS="%{ldflags} -lpam" GOLANG=no
+%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -fPIC" LDFLAGS="%{build_ldflags} -lpam" GOLANG=no
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
@@ -195,6 +195,7 @@ rm -f %{buildroot}/%{_lib}/*.a
 %{_sbindir}/getcap
 %{_sbindir}/getpcaps
 %{_sbindir}/setcap
+%{_sbindir}/capsh
 %{_mandir}/man8/*.8*
 
 %files docs
