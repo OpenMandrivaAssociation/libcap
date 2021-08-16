@@ -5,6 +5,8 @@
 %bcond_with compat32
 %endif
 
+%define _disable_ld_no_undefined 1
+
 %define major 2
 %define libname %mklibname cap %{major}
 %define libpsx %mklibname psx %{major}
@@ -15,7 +17,7 @@
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.51
+Version:	2.53
 Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
