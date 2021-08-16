@@ -5,6 +5,8 @@
 %bcond_with compat32
 %endif
 
+%define _disable_ld_no_undefined 1
+
 %define major 2
 %define libname %mklibname cap %{major}
 %define libpsx %mklibname psx %{major}
