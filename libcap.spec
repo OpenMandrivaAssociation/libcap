@@ -17,7 +17,7 @@
 
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
-Version:	2.63
+Version:	2.64
 Release:	1
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
@@ -149,7 +149,7 @@ cd ..
 
 # cb ensure fPIC set for i586 as otherwise it is missed causing issues
 # FIXME get rid of GOLANG=no once we know why it's failing to build
-%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -fPIC" LDFLAGS="%{build_ldflags} -lpam" GOLANG=no
+%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -Oz -fPIC" LDFLAGS="%{build_ldflags} -lpam" GOLANG=no
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
@@ -170,20 +170,12 @@ cd ..
 
 %make_install RAISE_SETFCAP=no \
 	DESTDIR=%{buildroot} \
-	LIBDIR=/%{_lib} \
+	LIBDIR=%{_libdir} \
 	SBINDIR=%{_sbindir} \
 	INCDIR=%{_includedir} \
 	MANDIR=%{_mandir}/ \
 	GOLANG=no \
 	PKGCONFIGDIR=%{_libdir}/pkgconfig/
-
-rm -f %{buildroot}/%{_lib}/libcap.so
-rm -f %{buildroot}/%{_lib}/libpsx.so
-install -d %{buildroot}%{_libdir}
-ln -srf %{buildroot}/%{_lib}/libcap.so.%{major}.* %{buildroot}%{_libdir}/libcap.so
-ln -srf %{buildroot}/%{_lib}/libpsx.so.%{major}.* %{buildroot}%{_libdir}/libpsx.so
-chmod 755 %{buildroot}/%{_lib}/libcap.so.%{major}.*
-chmod 755 %{buildroot}/%{_lib}/libpsx.so.%{major}.*
 
 # conflics with man-pages
 rm -f %{buildroot}%{_mandir}/man2/*
@@ -191,7 +183,7 @@ rm -f %{buildroot}%{_mandir}/man2/*
 install -m0640 pam_cap/capability.conf %{buildroot}%{_sysconfdir}/security/
 
 # cleanup
-rm -f %{buildroot}/%{_lib}/*.a
+rm -f %{buildroot}%{_libdir}/*.a
 
 %files utils
 %{_sbindir}/getcap
@@ -206,13 +198,13 @@ rm -f %{buildroot}/%{_lib}/*.a
 %files -n pam_cap
 %doc pam_cap/License
 %attr(0640,root,root) %config(noreplace) %{_sysconfdir}/security/capability.conf
-/%{_lib}/security/pam_cap.so
+%{_libdir}/security/pam_cap.so
 
 %files -n %{libname}
-/%{_lib}/libcap.so.%{major}*
+%{_libdir}/libcap.so.%{major}*
 
 %files -n %{libpsx}
-/%{_lib}/libpsx.so.%{major}*
+%{_libdir}/libpsx.so.%{major}*
 
 %files -n %{devname}
 %doc capfaq-0.2.txt
