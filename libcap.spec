@@ -18,7 +18,7 @@
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.64
-Release:	1
+Release:	2
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
@@ -29,6 +29,7 @@ BuildRequires:	pkgconfig(libattr)
 BuildRequires:	pam-devel
 %if %{with compat32}
 BuildRequires:	devel(libattr)
+BuildRequires:	libc6
 %endif
 
 %description
@@ -119,8 +120,9 @@ Group:		Development/Kernel
 Requires:	%{devname} >= %{EVRD}
 Requires:	%{lib32name} >= %{EVRD}
 Requires:	%{lib32psx} >= %{EVRD}
+Requires:	libc6
 
-%description -n	%{dev32name}
+%description -n %{dev32name}
 Development files (Headers, libraries for static linking, etc) for %{name}.
 
 %{name} is a library for getting and setting POSIX.1e (formerly POSIX 6)
