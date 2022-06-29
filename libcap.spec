@@ -18,7 +18,7 @@
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.64
-Release:	2
+Release:	3
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		http://www.kernel.org/pub/linux/libs/security/linux-privs/
@@ -145,13 +145,13 @@ install -m644 %{SOURCE1} .
 mkdir build32
 cp -a $(ls -1 |grep -v build32) build32/
 cd build32
-%make_build BUILD_CC="gcc -m32" CC="gcc -m32" PREFIX=%{_prefix} CFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g;s,-mx32,,g') -m32" LDFLAGS="$(echo %{build_ldflags} |sed -e 's,-m64,,g;s,-mx32,,g') -m32" PAM_CAP=no GOLANG=no
+%make_build BUILD_CC="gcc -m32" CC="gcc -m32" PREFIX=%{_prefix} CFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g;s,-mx32,,g') -m32" LDFLAGS="$(echo %{build_ldflags} |sed -e 's,-m64,,g;s,-mx32,,g') -m32" LIBDIR=%{_prefix}/lib lib=lib PAM_CAP=no GOLANG=no
 cd ..
 %endif
 
 # cb ensure fPIC set for i586 as otherwise it is missed causing issues
 # FIXME get rid of GOLANG=no once we know why it's failing to build
-%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -Oz -fPIC" LDFLAGS="%{build_ldflags} -lpam" GOLANG=no
+%make_build BUILD_CC=%{__cc} CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -Oz -fPIC" LDFLAGS="%{build_ldflags} -lpam" LIBDIR=%{_libdir} lib=%{_lib} GOLANG=no
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
@@ -160,6 +160,7 @@ install -d %{buildroot}%{_sysconfdir}/security
 cd build32
 %make_install RAISE_SETFCAP=no \
 	DESTDIR=%{buildroot} \
+	lib=lib \
 	LIBDIR=%{_prefix}/lib \
 	SBINDIR=%{_sbindir} \
 	INCDIR=%{_includedir} \
@@ -172,6 +173,7 @@ cd ..
 
 %make_install RAISE_SETFCAP=no \
 	DESTDIR=%{buildroot} \
+	lib=%{_lib} \
 	LIBDIR=%{_libdir} \
 	SBINDIR=%{_sbindir} \
 	INCDIR=%{_includedir} \
@@ -179,13 +181,17 @@ cd ..
 	GOLANG=no \
 	PKGCONFIGDIR=%{_libdir}/pkgconfig/
 
-# conflics with man-pages
+# conflicts with man-pages
 rm -f %{buildroot}%{_mandir}/man2/*
 
 install -m0640 pam_cap/capability.conf %{buildroot}%{_sysconfdir}/security/
 
 # cleanup
 rm -f %{buildroot}%{_libdir}/*.a
+
+# -L%{_libdir} is evil
+# Using find here so compat32 stuff is included
+find %{buildroot} -name "*.pc" |xargs sed -i -e 's,-L\${libdir} ,,g'
 
 %files utils
 %{_sbindir}/getcap
