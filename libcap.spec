@@ -160,7 +160,7 @@ cd ..
 
 # cb ensure fPIC set for i586 as otherwise it is missed causing issues
 # FIXME get rid of GOLANG=no once we know why it's failing to build
-%make_build BUILD_CC=clang CC=%{__cc} PREFIX=%{_prefix} CFLAGS="%{optflags} -Oz -fPIC" LDFLAGS="%{build_ldflags} -lpam" LIBDIR=%{_libdir} lib=%{_lib} GOLANG=no
+%make_build BUILD_CC="clang" CC="%{__cc}" PREFIX=%{_prefix} CFLAGS="%{optflags} -Oz -fPIC" LDFLAGS="%{build_ldflags} -lpam" LIBDIR=%{_libdir} lib=%{_lib} GOLANG=no OBJCOPY=llvm-objcopy
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
