@@ -4,6 +4,10 @@
 %else
 %bcond_with compat32
 %endif
+# For bootstrapping:
+# libcap depends on pam
+# pam depends on libsystemd (logind), which in turn depends on libcap
+%bcond_without pam
 
 %define _disable_ld_no_undefined 1
 
@@ -30,7 +34,9 @@ Source0:	https://mirrors.edge.kernel.org/pub/linux/libs/security/linux-privs/lib
 Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 #Patch0:		libcap-2.29-build-system-fixes.patch
 BuildRequires:	pkgconfig(libattr)
+%if %{with pam}
 BuildRequires:	pam-devel
+%endif
 %if %{with compat32}
 BuildRequires:	devel(libattr)
 BuildRequires:	libc6
@@ -160,7 +166,7 @@ cd ..
 
 # cb ensure fPIC set for i586 as otherwise it is missed causing issues
 # FIXME get rid of GOLANG=no once we know why it's failing to build
-%make_build BUILD_CC="clang" CC="%{__cc}" PREFIX=%{_prefix} CFLAGS="%{optflags} -Oz -fPIC" LDFLAGS="%{build_ldflags} -lpam" LIBDIR=%{_libdir} lib=%{_lib} GOLANG=no OBJCOPY=llvm-objcopy
+%make_build BUILD_CC="clang" CC="%{__cc}" PREFIX=%{_prefix} CFLAGS="%{optflags} -Oz -fPIC" %{?with_pam:LDFLAGS="%{build_ldflags} -lpam"} LIBDIR=%{_libdir} lib=%{_lib} GOLANG=no OBJCOPY=llvm-objcopy PAM_CAP=%{?with_pam:yes}%{!?with_pam:no}
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
@@ -188,12 +194,15 @@ cd ..
 	INCDIR=%{_includedir} \
 	MANDIR=%{_mandir}/ \
 	GOLANG=no \
-	PKGCONFIGDIR=%{_libdir}/pkgconfig/
+	PKGCONFIGDIR=%{_libdir}/pkgconfig/ \
+	PAM_CAP=%{?with_pam:yes}%{!?with_pam:no}
 
 # conflicts with man-pages
 rm -f %{buildroot}%{_mandir}/man2/*
 
+%if %{with pam}
 install -m0640 pam_cap/capability.conf %{buildroot}%{_sysconfdir}/security/
+%endif
 
 # cleanup
 rm -f %{buildroot}%{_libdir}/*.a
@@ -212,10 +221,12 @@ find %{buildroot} -name "*.pc" |xargs sed -i -e 's,-L\${libdir} ,,g'
 %files docs
 %doc CHANGELOG License README contrib
 
+%if %{with pam}
 %files -n pam_cap
 %doc pam_cap/License
 %attr(0640,root,root) %config(noreplace) %{_sysconfdir}/security/capability.conf
 %{_libdir}/security/pam_cap.so
+%endif
 
 %files -n %{libname}
 %{_libdir}/libcap.so.%{major}*
