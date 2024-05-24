@@ -241,7 +241,7 @@ find %{buildroot} -name "*.pc" |xargs sed -i -e 's,-L\${libdir} ,,g'
 %{_libdir}/libpsx.so
 %doc %{_mandir}/man3/*.3*
 %doc %{_mandir}/man1/capsh.1.*
-%doc %{_mandir}man5/capability.conf.5.*
+%doc %{_mandir}/man5/capability.conf.5.*
 %{_libdir}/pkgconfig/libcap.pc
 %{_libdir}/pkgconfig/libpsx.pc
 
