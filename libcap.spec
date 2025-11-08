@@ -26,7 +26,7 @@
 Summary:	Library for getting and setting POSIX.1e capabilities
 Name:		libcap
 Version:	2.77
-Release:	1
+Release:	2
 Group:		System/Kernel and hardware
 License:	BSD/GPLv2
 Url:		https://www.kernel.org/pub/linux/libs/security/linux-privs/
@@ -166,7 +166,7 @@ cd ..
 
 # cb ensure fPIC set for i586 as otherwise it is missed causing issues
 # FIXME get rid of GOLANG=no once we know why it's failing to build
-%make_build BUILD_CC="clang" CC="%{__cc}" PREFIX=%{_prefix} CFLAGS="%{optflags} -Oz -fPIC" %{?with_pam:LDFLAGS="%{build_ldflags} -lpam"} LIBDIR=%{_libdir} lib=%{_lib} GOLANG=no OBJCOPY=llvm-objcopy PAM_CAP=%{?with_pam:yes}%{!?with_pam:no}
+%make_build BUILD_CC="clang" CC="%{__cc}" PREFIX=%{_prefix} BUILD_CFLAGS="-O3 -march=native" BUILD_CPPFLAGS="-O3 -march=native" BUILD_LDFLAGS="-lpam" CFLAGS="%{optflags} -Oz -fPIC" %{?with_pam:LDFLAGS="%{build_ldflags} -lpam"} LIBDIR=%{_libdir} lib=%{_lib} GOLANG=no OBJCOPY=llvm-objcopy PAM_CAP=%{?with_pam:yes}%{!?with_pam:no}
 
 %install
 install -d %{buildroot}%{_sysconfdir}/security
