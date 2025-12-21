@@ -33,6 +33,7 @@ Url:		https://www.kernel.org/pub/linux/libs/security/linux-privs/
 Source0:	https://mirrors.edge.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
 Source1:	ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
 #Patch0:		libcap-2.29-build-system-fixes.patch
+BuildRequires:	make
 BuildRequires:	pkgconfig(libattr)
 %if %{with pam}
 BuildRequires:	pam-devel
